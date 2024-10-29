@@ -7,13 +7,12 @@ from discord.ext import commands, tasks
 from mcrcon import MCRcon
 
 # Configuration
-FACTORIO_SERVER_IP = os.environ.get("FACTORIO_SERVER_IP", "192.168.1.120")
-FACTORIO_SERVER_PORT = int(os.environ.get("FACTORIO_SERVER_PORT", 34197))
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
 DISCORD_CHANNEL_ID = int(os.environ.get("DISCORD_CHANNEL_ID", 0))
-CHECK_INTERVAL = int(os.environ.get("CHECK_INTERVAL", 300))
+FACTORIO_SERVER_IP = os.environ.get("FACTORIO_SERVER_IP", "192.168.1.120")
 FACTORIO_RCON_PORT = int(os.environ.get("FACTORIO_RCON_PORT", 27015))
-FACTORIO_SERVER_PASSWORD = os.environ.get("FACTORIO_SERVER_PASSWORD")
+FACTORIO_RCON_PASSWORD = os.environ.get("FACTORIO_RCON_PASSWORD")
+CHECK_INTERVAL = int(os.environ.get("CHECK_INTERVAL", 300))
 
 # Initialize Discord bot
 intents = discord.Intents.default()
@@ -31,7 +30,7 @@ async def get_factorio_status():
         )
 
         with MCRcon(
-            FACTORIO_SERVER_IP, FACTORIO_SERVER_PASSWORD, port=FACTORIO_RCON_PORT
+            FACTORIO_SERVER_IP, FACTORIO_RCON_PASSWORD, port=FACTORIO_RCON_PORT
         ) as mcr:
             players_resp = mcr.command("/players online")
             version_resp = mcr.command("/version")

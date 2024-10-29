@@ -19,17 +19,16 @@ cd factorio-status
 DISCORD_TOKEN=your_discord_bot_token
 DISCORD_CHANNEL_ID=your_discord_channel_id
 FACTORIO_SERVER_IP=your_factorio_server_ip
-FACTORIO_SERVER_PORT=34197
 FACTORIO_RCON_PORT=27015
-FACTORIO_SERVER_PASSWORD=your_factorio_rcon_password
+FACTORIO_RCON_PASSWORD=your_factorio_rcon_password
 CHECK_INTERVAL=300
 
 
 Replace the values with your actual Discord bot token, channel ID, Factorio server details, and desired check interval.
 
 3. Build the Docker image:
-docker build -t factorio-discord-bot .
+docker build -t factorio-status .
 
 
 4. Run the Docker container:
-docker run --env-file .env factorio-discord-bot
+docker run --env-file .env factorio-status

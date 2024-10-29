@@ -1,0 +1,31 @@
+# Python-related
+__pycache__/
+*.py[cod]
+*.so
+
+# Environment variables
+.env
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# IDE-related
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Docker
+.dockerignore
+
+# Operating system-related
+.DS_Store
+Thumbs.db
+
+# Miscellaneous
+*.bak
+*.swp
+*.tmp

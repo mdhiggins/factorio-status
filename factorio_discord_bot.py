@@ -3,7 +3,7 @@ import os
 from datetime import UTC, datetime
 
 import discord
-from discord.ext import commands, tasks
+from discord.ext import tasks
 from mcrcon import MCRcon
 
 # Configuration
@@ -14,9 +14,10 @@ FACTORIO_RCON_PORT = int(os.environ.get("FACTORIO_RCON_PORT", 27015))
 FACTORIO_RCON_PASSWORD = os.environ.get("FACTORIO_RCON_PASSWORD")
 CHECK_INTERVAL = int(os.environ.get("CHECK_INTERVAL", 60))
 
-# Initialize Discord bot
+# Initialize Discord client
 intents = discord.Intents.default()
-bot = commands.Bot(intents=intents)
+client = discord.Client(intents=intents)
+tree = discord.app_commands.CommandTree(client)
 
 last_message = None
 players = []
@@ -108,7 +109,7 @@ async def get_discord_embed(status) -> discord.Embed:
 
 @tasks.loop(seconds=CHECK_INTERVAL)
 async def check_server_status():
-    channel = bot.get_channel(DISCORD_CHANNEL_ID)
+    channel = client.get_channel(DISCORD_CHANNEL_ID)
     if not channel:
         return
 
@@ -136,7 +137,7 @@ async def check_server_status():
     if not last_message:
         pins = await channel.pins()
         for message in pins:
-            if message.author == bot.user:
+            if message.author == client.user:
                 last_message = message
                 break
 
@@ -149,8 +150,15 @@ async def check_server_status():
         await last_message.pin()
 
 
+@client.event
+async def on_ready():
+    logging.info(f"{client.user} has connected to Discord!")
+    check_server_status.start()
+    await tree.sync()  # Sync the slash commands
+
+
 # Register the slash command
-@bot.tree.command(name="status", description="Manual command to check server status")
+@tree.command(name="status", description="Manual command to check server status")
 async def status(interaction: discord.Interaction):
     """Manual command to check server status"""
     status = await get_factorio_status()
@@ -158,11 +166,5 @@ async def status(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed)
 
 
-@bot.event
-async def on_ready():
-    logging.info(f"{bot.user} has connected to Discord!")
-    check_server_status.start()
-
-
-# Run the bot
-bot.run(DISCORD_TOKEN)
+# Run the client
+client.run(DISCORD_TOKEN)

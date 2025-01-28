@@ -127,7 +127,7 @@ async def check_server_status():
 
     # Check if the last message in the channel is from the bot
     if not last_message:
-        async for message in channel.pins():
+        async for message in await channel.pins():
             if message.author == bot.user:
                 last_message = message
                 break

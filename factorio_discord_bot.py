@@ -109,21 +109,22 @@ async def check_server_status():
             player_list = "\n".join([f"{player[0]}" for player in status["players"]])
             embed.add_field(name="Player List", value=player_list, inline=False)
 
-            for player in status["players"]:
-                if player not in players:
-                    await channel.send(f"**{player[0]}** joined the factorio server")
+        for player in status["players"]:
+            if player not in players:
+                await channel.send(f"**{player[0]}** joined the factorio server")
 
-            for player in players:
-                if player not in status["players"]:
-                    await channel.send(f"**{player[0]}** left the factorio server")
+        for player in players:
+            if player not in status["players"]:
+                await channel.send(f"**{player[0]}** left the factorio server")
 
-            players = status["players"]
+        players = status["players"]
 
     else:
         embed.add_field(name="Status", value="🔴 Offline", inline=False)
         embed.add_field(
             name="Error", value=status.get("error", "Unknown error"), inline=False
         )
+        players = []
 
     # Check if the last message in the channel is from the bot
     if not last_message:

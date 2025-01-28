@@ -154,6 +154,7 @@ async def check_server_status():
 async def on_ready():
     logging.info(f"{client.user} has connected to Discord!")
     check_server_status.start()
+    await tree.sync()
 
 
 # Register the slash command

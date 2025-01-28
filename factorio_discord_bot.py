@@ -159,7 +159,7 @@ async def on_ready():
 
 
 # Register the slash command
-@tree.command(name="status", description="Manual command to check server status")
+@tree.command(name="factorio-status", description="Manual command to check server status")
 async def status(interaction: discord.Interaction):
     """Manual command to check server status"""
     status = await get_factorio_status()

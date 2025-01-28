@@ -16,7 +16,7 @@ CHECK_INTERVAL = int(os.environ.get("CHECK_INTERVAL", 60))
 
 # Initialize Discord bot
 intents = discord.Intents.default()
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(intents=intents)
 
 last_message = None
 players = []
@@ -76,14 +76,7 @@ async def get_factorio_status():
         return {"status": "offline", "error": f"Connection error: {str(e)}"}
 
 
-@tasks.loop(seconds=CHECK_INTERVAL)
-async def check_server_status():
-    channel = bot.get_channel(DISCORD_CHANNEL_ID)
-    if not channel:
-        return
-
-    status = await get_factorio_status()
-
+async def get_discord_embed(status) -> discord.Embed:
     embed = discord.Embed(
         title="Factorio Server Status",
         color=discord.Color.green()
@@ -91,9 +84,6 @@ async def check_server_status():
         else discord.Color.red(),
         timestamp=datetime.now(UTC),
     )
-
-    global last_message
-    global players
 
     if status["status"] == "online":
         embed.add_field(name="Status", value="🟢 Online", inline=False)
@@ -108,7 +98,28 @@ async def check_server_status():
         if status["players"]:
             player_list = "\n".join([f"{player[0]}" for player in status["players"]])
             embed.add_field(name="Player List", value=player_list, inline=False)
+    else:
+        embed.add_field(name="Status", value="🔴 Offline", inline=False)
+        embed.add_field(
+            name="Error", value=status.get("error", "Unknown error"), inline=False
+        )
 
+    return embed
+
+@tasks.loop(seconds=CHECK_INTERVAL)
+async def check_server_status():
+    channel = bot.get_channel(DISCORD_CHANNEL_ID)
+    if not channel:
+        return
+
+    status = await get_factorio_status()
+
+    embed = await get_discord_embed(status)
+
+    global last_message
+    global players
+
+    if status["status"] == "online":
         for player in status["players"]:
             if player not in players:
                 await channel.send(f"**{player[0]}** joined the Factorio server")
@@ -118,12 +129,7 @@ async def check_server_status():
                 await channel.send(f"**{player[0]}** left the Factorio server")
 
         players = status["players"]
-
     else:
-        embed.add_field(name="Status", value="🔴 Offline", inline=False)
-        embed.add_field(
-            name="Error", value=status.get("error", "Unknown error"), inline=False
-        )
         players = []
 
     # Check if the last message in the channel is from the bot
@@ -143,21 +149,13 @@ async def check_server_status():
         await last_message.pin()
 
 
-@bot.command(name="status")
-async def status(ctx):
+# Register the slash command
+@bot.tree.command(name="status", description="Manual command to check server status")
+async def status(interaction: discord.Interaction):
     """Manual command to check server status"""
     status = await get_factorio_status()
-
-    if status["status"] == "online":
-        response = f"Server is online with {status['player_count']} players\n"
-        response += f"Server Lifetime: {status['server_lifetime']}"
-        if status["players"]:
-            player_list = ", ".join([f"{player[0]}" for player in status["players"]])
-            response += f"\nPlayers: {player_list}"
-    else:
-        response = f"Server is offline: {status.get('error', 'Unknown error')}"
-
-    await ctx.send(response)
+    embed = await get_discord_embed(status)
+    await interaction.response.send_message(embed=embed)
 
 
 @bot.event

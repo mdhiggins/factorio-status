@@ -1,0 +1,11 @@
+services:
+  factorio-status:
+    image: ghcr.io/mdhiggins/factorio-status
+    container_name: factorio-status
+    environment:
+      - DISCORD_TOKEN=<token>
+      - DISCORD_CHANNEL_ID=<channel_id>
+      - FACTORIO_SERVER_IP=<address>
+      - FACTORIO_RCON_PASSWORD=<password>
+      - FACTORIO_RCON_PORT=27015
+      - CHECK_INTERVAL=60

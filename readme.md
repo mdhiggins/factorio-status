@@ -1,6 +1,6 @@
 # Factorio Discord Bot
 
-This Discord bot provides real-time status updates for a Factorio server, including player count, server uptime, and more.
+This Discord bot provides real-time status updates for a Factorio server, including player count, server uptime, and more. Server status will be pinned to the channel and interval messages will be sent when a player leaves or joins the server
 
 ## Prerequisites
 
@@ -8,27 +8,35 @@ This Discord bot provides real-time status updates for a Factorio server, includ
 - Discord Bot Token
 - Factorio Server with RCON enabled
 
-## Setup
+## Discord Bot Permissions
 
-1. Clone this repository:
-git clone git@github.com:EricBriscoe/factorio-status.git
-cd factorio-status
+- bot
+  - Send Messages
+  - Manage Messages
+  - Use Slash Commands
+- applications.command
 
+## Command
 
-2. Create a `.env` file in the project root with the following content:
-DISCORD_TOKEN=your_discord_bot_token
-DISCORD_CHANNEL_ID=your_discord_channel_id
-FACTORIO_SERVER_IP=your_factorio_server_ip
-FACTORIO_RCON_PORT=27015
-FACTORIO_RCON_PASSWORD=your_factorio_rcon_password
-CHECK_INTERVAL=300
+`/factorio-status` will send the latest server status before the next interval update
 
+## Version Tags
 
-Replace the values with your actual Discord bot token, channel ID, Factorio server details, and desired check interval.
+|Tag|Description|
+|---|---|
+|latest|Stable release|
 
-3. Build the Docker image:
-docker build -t factorio-status .
+## Usage
 
+### docker-compose
+See the docker-compose.yml file for a sample setup
 
-4. Run the Docker container:
-docker run --env-file .env factorio-status
+## Environment Variables
+|Variable|Description|
+|---|---|
+|DISCORD_TOKEN|Your Discord bot token|
+|DISCORD_CHANNEL_ID|Discord channel ID where the bot will post|
+|FACTORIO_SERVER_IP|IP or address to connect to your Factorio server|
+|FACTORIO_RCON_PORT|Port|
+|FACTORIO_RCON_PASSWORD|RCON password (different from game password)|
+|CHECK_INTERVAL|60|

@@ -17,7 +17,10 @@ CHECK_INTERVAL = int(os.environ.get("CHECK_INTERVAL", 60))
 # Initialize Discord bot
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
+
+global last_message
 last_message = None
+global players
 players = []
 
 logging.basicConfig(
@@ -112,6 +115,8 @@ async def check_server_status():
             for player in players:
                 if player not in status["players"]:
                     await channel.send(f"{player[0]} left the server")
+
+            players = status["players"]
 
     else:
         embed.add_field(name="Status", value="🔴 Offline", inline=False)

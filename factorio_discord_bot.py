@@ -12,11 +12,13 @@ DISCORD_CHANNEL_ID = int(os.environ.get("DISCORD_CHANNEL_ID", 0))
 FACTORIO_SERVER_IP = os.environ.get("FACTORIO_SERVER_IP", "192.168.1.120")
 FACTORIO_RCON_PORT = int(os.environ.get("FACTORIO_RCON_PORT", 27015))
 FACTORIO_RCON_PASSWORD = os.environ.get("FACTORIO_RCON_PASSWORD")
-CHECK_INTERVAL = int(os.environ.get("CHECK_INTERVAL", 300))
+CHECK_INTERVAL = int(os.environ.get("CHECK_INTERVAL", 60))
 
 # Initialize Discord bot
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
+last_message = None
+players = []
 
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -102,6 +104,15 @@ async def check_server_status():
         if status["players"]:
             player_list = "\n".join([f"{player[0]}" for player in status["players"]])
             embed.add_field(name="Player List", value=player_list, inline=False)
+
+            for player in status["players"]:
+                if player not in players:
+                    await channel.send(f"{player[0]} joined the server")
+
+            for player in players:
+                if player not in status["players"]:
+                    await channel.send(f"{player[0]} left the server")
+
     else:
         embed.add_field(name="Status", value="🔴 Offline", inline=False)
         embed.add_field(
@@ -109,18 +120,19 @@ async def check_server_status():
         )
 
     # Check if the last message in the channel is from the bot
-    last_message = None
-    async for message in channel.history(limit=1):
-        if message.author == bot.user:
-            last_message = message
-            break
+    if not last_message:
+        async for message in channel.pins():
+            if message.author == bot.user:
+                last_message = message
+                break
 
     if last_message:
         # If the last message is from the bot, edit it
         await last_message.edit(embed=embed)
     else:
         # If there's no previous message from the bot, send a new one
-        await channel.send(embed=embed)
+        last_message = await channel.send(embed=embed)
+        await last_message.pin()
 
 
 @bot.command(name="status")

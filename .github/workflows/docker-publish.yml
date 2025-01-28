@@ -72,6 +72,7 @@ jobs:
         env:
           DOCKER_CLI_EXPERIMENTAL: enabled
         run: |
+          docker manifest create \
           ghcr.io/${{ github.repository }}:${{ env.tag }} \
           --amend ghcr.io/${{ github.repository }}:${{ env.tag }}-amd64 \
           --amend ghcr.io/${{ github.repository }}:${{ env.tag }}-arm64

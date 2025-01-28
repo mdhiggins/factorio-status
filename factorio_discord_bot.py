@@ -18,9 +18,7 @@ CHECK_INTERVAL = int(os.environ.get("CHECK_INTERVAL", 60))
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-global last_message
 last_message = None
-global players
 players = []
 
 logging.basicConfig(
@@ -93,6 +91,9 @@ async def check_server_status():
         else discord.Color.red(),
         timestamp=datetime.now(UTC),
     )
+
+    global last_message
+    global players
 
     if status["status"] == "online":
         embed.add_field(name="Status", value="🟢 Online", inline=False)

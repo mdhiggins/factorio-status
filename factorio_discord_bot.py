@@ -111,11 +111,11 @@ async def check_server_status():
 
         for player in status["players"]:
             if player not in players:
-                await channel.send(f"**{player[0]}** joined the factorio server")
+                await channel.send(f"**{player[0]}** joined the Factorio server")
 
         for player in players:
             if player not in status["players"]:
-                await channel.send(f"**{player[0]}** left the factorio server")
+                await channel.send(f"**{player[0]}** left the Factorio server")
 
         players = status["players"]
 

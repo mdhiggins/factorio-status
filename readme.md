@@ -10,11 +10,11 @@ This Discord bot provides real-time status updates for a Factorio server, includ
 
 ## Discord Bot Permissions
 
-- bot
+- `bot`
   - Send Messages
   - Manage Messages
   - Use Slash Commands
-- applications.command
+- `applications.commands`
 
 ## Command
 

@@ -14,6 +14,8 @@ FACTORIO_SERVER_IP = os.environ.get("FACTORIO_SERVER_IP", "192.168.1.120")
 FACTORIO_RCON_PORT = int(os.environ.get("FACTORIO_RCON_PORT", 27015))
 FACTORIO_RCON_PASSWORD = os.environ.get("FACTORIO_RCON_PASSWORD")
 CHECK_INTERVAL = int(os.environ.get("CHECK_INTERVAL", 60))
+ANNOUNCE_PLAYERS = os.environ.get("ANNOUNCE_PLAYERS", "true").lower() in ("true", "1", "yes", "y")
+DEBUG_LOGGING = os.environ.get("DEBUG_LOGGING", "false").lower() in ("true", "1", "yes", "y")
 
 # Initialize Discord client
 intents = discord.Intents.default()
@@ -24,14 +26,14 @@ last_message = None
 players = []
 
 logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.DEBUG if DEBUG_LOGGING else logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
 async def get_factorio_status():
     try:
         logging.info(
-            f"Attempting to connect to Factorio server at {FACTORIO_SERVER_IP}:{FACTORIO_RCON_PORT}"
+            f"Connecting to Factorio server {FACTORIO_SERVER_IP}:{FACTORIO_RCON_PORT}"
         )
 
         with MCRcon(
@@ -41,11 +43,11 @@ async def get_factorio_status():
             version_resp = mcr.command("/version")
             time_resp = mcr.command("/time")
 
-        logging.info(f"Players response: {players_resp}")
-        logging.info(f"Version response: {version_resp}")
-        logging.info(f"Time response: {time_resp}")
+        logging.debug(f"Players response: {players_resp}")
+        logging.debug(f"Version response: {version_resp}")
+        logging.debug(f"Time response: {time_resp}")
 
-        # Parse players and their playtime
+        # Parse players
         players = []
         match = re.search(r'Online players \((\d+)\)', players_resp)
         if match and int(match.group(1)) > 0:
@@ -54,11 +56,8 @@ async def get_factorio_status():
                 if line.strip():
                     parts = line.split("(")
                     player_name = parts[0].strip()
-                    playtime = (
-                        parts[1].split(")")[0].strip() if len(parts) > 1 else "Unknown"
-                    )
                     if player_name != "Online players":
-                        players.append((player_name, playtime))
+                        players.append(player_name)
 
         game_version = version_resp.strip()
         server_lifetime = time_resp.strip()
@@ -72,7 +71,7 @@ async def get_factorio_status():
             "server_lifetime": server_lifetime,
         }
 
-        logging.info(f"Server status: {status}")
+        logging.debug(f"Server status: {status}")
         return status
 
     except Exception as e:
@@ -123,14 +122,14 @@ async def check_server_status():
     global last_message
     global players
 
-    if status["status"] == "online":
+    if status["status"] == "online" and ANNOUNCE_PLAYERS:
         for player in status["players"]:
             if player not in players:
-                await channel.send(f"**{player[0]}** joined the Factorio server")
+                await channel.send(f"**{player}** joined the Factorio server")
 
         for player in players:
             if player not in status["players"]:
-                await channel.send(f"**{player[0]}** left the Factorio server")
+                await channel.send(f"**{player}** left the Factorio server")
 
         players = status["players"]
     else:
@@ -163,7 +162,7 @@ async def on_ready():
 # Register the slash command
 @tree.command(name="factorio-status", description="Manual command to check server status")
 async def status(interaction: discord.Interaction):
-    """Manual command to check server status"""
+    logging.debug(f"Manual command triggered for /factorio-status by {interaction.user}")
     status = await get_factorio_status()
     embed = await get_discord_embed(status)
     await interaction.response.send_message(embed=embed)

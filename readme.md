@@ -40,3 +40,5 @@ See the docker-compose.yml file for a sample setup
 |FACTORIO_RCON_PORT|Port|
 |FACTORIO_RCON_PASSWORD|RCON password (different from game password)|
 |CHECK_INTERVAL|60|
+|ANNOUNCE_PLAYERS|Boolean value to announce in the channel when a player joins and leaves, default `true`|
+|DEBUG_LOGGING|Boolean value to enable debug logging, default `false`|

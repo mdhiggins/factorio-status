@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from datetime import UTC, datetime
 
 import discord
@@ -46,7 +47,8 @@ async def get_factorio_status():
 
         # Parse players and their playtime
         players = []
-        if "Online players" in players_resp:
+        match = re.search(r'Online players \((\d+)\)', players_resp)
+        if match and int(match.group(1)) > 0:
             player_lines = players_resp.split("\n")[1:]  # Skip the first line
             for line in player_lines:
                 if line.strip():
@@ -55,7 +57,8 @@ async def get_factorio_status():
                     playtime = (
                         parts[1].split(")")[0].strip() if len(parts) > 1 else "Unknown"
                     )
-                    players.append((player_name, playtime))
+                    if player_name != "Online players":
+                        players.append((player_name, playtime))
 
         game_version = version_resp.strip()
         server_lifetime = time_resp.strip()

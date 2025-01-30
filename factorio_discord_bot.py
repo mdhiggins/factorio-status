@@ -32,8 +32,8 @@ logging.basicConfig(
 
 async def get_factorio_status():
     try:
-        logging.info(
-            f"Connecting to Factorio server {FACTORIO_SERVER_IP}:{FACTORIO_RCON_PORT}"
+        logging.debug(
+            f"Querying Factorio server {FACTORIO_SERVER_IP}:{FACTORIO_RCON_PORT}"
         )
 
         with MCRcon(
@@ -157,6 +157,9 @@ async def on_ready():
     logging.info(f"{client.user} has connected to Discord!")
     check_server_status.start()
     await tree.sync()
+    logging.info(
+        f"Starting to monitor to Factorio server {FACTORIO_SERVER_IP}:{FACTORIO_RCON_PORT}"
+    )
 
 
 # Register the slash command

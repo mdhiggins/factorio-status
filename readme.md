@@ -32,13 +32,13 @@ This Discord bot provides real-time status updates for a Factorio server, includ
 See the docker-compose.yml file for a sample setup
 
 ## Environment Variables
-|Variable|Description|
-|---|---|
-|DISCORD_TOKEN|Your Discord bot token|
-|DISCORD_CHANNEL_ID|Discord channel ID where the bot will post|
-|FACTORIO_SERVER_IP|IP or address to connect to your Factorio server|
-|FACTORIO_RCON_PORT|Port|
-|FACTORIO_RCON_PASSWORD|RCON password (different from game password)|
-|CHECK_INTERVAL|60|
-|ANNOUNCE_PLAYERS|Boolean value to announce in the channel when a player joins and leaves, default `true`|
-|DEBUG_LOGGING|Boolean value to enable debug logging, default `false`|
+|Variable|Description|Default|
+|---|---|---|
+|DISCORD_TOKEN|Your Discord bot token||
+|DISCORD_CHANNEL_ID|Discord channel ID where the bot will post||
+|FACTORIO_SERVER_IP|IP or address to connect to your Factorio server||
+|FACTORIO_RCON_PORT|Port|27015|
+|FACTORIO_RCON_PASSWORD|RCON password (different from game password)||
+|CHECK_INTERVAL|How frequently the game status is refreshed in seconds|`60`|
+|ANNOUNCE_PLAYERS|Boolean value to announce in the channel when a player joins and leaves|`true`|
+|DEBUG_LOGGING|Boolean value to enable debug logging|`false`|

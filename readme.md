@@ -37,7 +37,7 @@ See the docker-compose.yml file for a sample setup
 |DISCORD_TOKEN|Your Discord bot token||
 |DISCORD_CHANNEL_ID|Discord channel ID where the bot will post||
 |FACTORIO_SERVER_IP|IP or address to connect to your Factorio server||
-|FACTORIO_RCON_PORT|Port|27015|
+|FACTORIO_RCON_PORT|Port|`27015`|
 |FACTORIO_RCON_PASSWORD|RCON password (different from game password)||
 |CHECK_INTERVAL|How frequently the game status is refreshed in seconds|`60`|
 |ANNOUNCE_PLAYERS|Boolean value to announce in the channel when a player joins and leaves|`true`|
